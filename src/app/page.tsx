@@ -94,7 +94,7 @@ export default function Home() {
             >
               <div className="h-40 w-full rounded-xl bg-gradient-to-br from-teal-400/30 via-cyan-400/20 to-indigo-400/30 transition group-hover:scale-105" />
               <div className="mt-4 flex items-center justify-between">
-                <h3 className="font-semibold">{item.title}</h3>
+                <h3 className="font-semibold text-slate-900 dark:text-slate-200">{item.title}</h3>
                 <span className="text-xs text-slate-500">{item.tag}</span>
               </div>
             </article>
@@ -188,7 +188,7 @@ function ServiceCard({
   return (
     <article className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
       <div className={`absolute -right-8 -top-8 h-28 w-28 rounded-full bg-gradient-to-br ${accent} opacity-20 blur-xl transition group-hover:opacity-30`} aria-hidden />
-      <h3 className="text-lg font-semibold">{title}</h3>
+      <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{title}</h3>
       <p className="mt-1 text-sm text-slate-500">{tagline}</p>
       <ul className="mt-4 space-y-2 text-sm text-slate-700 dark:text-slate-300">
         {points.map((p, i) => (

@@ -1,4 +1,4 @@
-import Logo from "@/components/Logo";
+// (no imports)
 
 export default function HeroVideo() {
   return (
@@ -102,13 +102,13 @@ export default function HeroVideo() {
   <div className="absolute inset-0 bg-slate-900/45 dark:bg-black/70" />
 
   {/* Foreground content */}
-  <div className="relative z-10 mx-auto flex h-full max-w-6xl flex-col items-start justify-center px-6 md:pr-[620px]">
+  <div className="relative z-10 mx-auto flex h-full max-w-6xl flex-col items-start justify-center px-6 md:pr-[580px]">
         <div className="inline-flex items-center gap-3 rounded-full bg-white/10 px-3 py-1 text-[11px] font-semibold text-white ring-1 ring-white/20 backdrop-blur md:text-xs">
           <span>WEB</span><span>•</span><span>VIDEO</span><span>•</span><span>PHOTO</span>
         </div>
 
         <h1 className="mt-5 text-4xl font-semibold tracking-tight text-white sm:text-5xl md:text-6xl">
-          Pacific Northwest stories, crafted for screens
+          Pacific Northwest stories - cinematic visuals with stunning websites
         </h1>
 
         <p className="mt-4 max-w-prose text-white/80">
