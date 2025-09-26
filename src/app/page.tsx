@@ -1,6 +1,7 @@
 import ThemeToggle from "@/components/ThemeToggle";
 import Logo from "@/components/Logo";
 import HeroVideo from "@/components/HeroVideo";
+import GearTimeline from "@/components/GearTimeline";
 import WorkCard from "@/components/WorkCard";
 
 export const dynamic = "force-static";
@@ -71,6 +72,18 @@ export default function Home() {
             accent="from-emerald-500 to-teal-500"
           />
         </div>
+      </section>
+
+      {/* Why we’re effective (gear timeline) */}
+      <section className="mx-auto max-w-6xl px-6 py-12 md:py-16">
+        <div className="mb-6 max-w-3xl">
+          <h2 className="text-2xl font-semibold sm:text-3xl">Why our work hits harder</h2>
+          <p className="mt-2 text-slate-600 dark:text-slate-300">
+            Years of building the right tools—automation, collaboration, proven technology, and AI in the process—
+            frees us to focus on the craft that moves people.
+          </p>
+        </div>
+        <GearTimeline physicsLocked={false} freeSpinSpeeds={[0.8, -0.6, 1.2, -0.94]} />
       </section>
 
       {/* Selected Work */}

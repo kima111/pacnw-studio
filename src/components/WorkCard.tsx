@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Image from "next/image";
 
 type VideoSource = { src: string; type: string };
 type PhotoItem = { src: string; alt?: string };
@@ -140,10 +141,13 @@ function PhotoCarousel({ photos = [] }: WorkCardProps) {
   return (
     <div className="absolute inset-0">
       {/* current image */}
-      <img
+      <Image
         src={valid[idx]?.src}
         alt={valid[idx]?.alt ?? "Gallery image"}
-        className="absolute inset-0 h-full w-full rounded-xl object-cover"
+        fill
+        className="rounded-xl object-cover"
+        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+        priority={idx === 0}
       />
 
       {/* controls */}
