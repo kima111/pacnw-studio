@@ -1,6 +1,7 @@
 import ThemeToggle from "@/components/ThemeToggle";
 import Logo from "@/components/Logo";
 import HeroVideo from "@/components/HeroVideo";
+import WorkCard from "@/components/WorkCard";
 
 export const dynamic = "force-static";
 
@@ -76,29 +77,63 @@ export default function Home() {
       <section id="work" className="mx-auto max-w-6xl px-6 py-16 md:py-20">
         <div className="flex items-end justify-between">
           <h2 className="text-2xl font-semibold sm:text-3xl">Selected work</h2>
-          <span className="text-sm text-slate-500">More on request</span>
+          <span className="text-sm text-slate-500">click cards for more details</span>
         </div>
 
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {[
-            { title: "Summit Outfitters", tag: "E‑commerce • Web" },
-            { title: "Cedar & Sea", tag: "Brand Film • Video" },
-            { title: "Harbor Roasters", tag: "Lifestyle • Photo" },
-            { title: "Cascade Trails", tag: "Marketing Site • Web" },
-            { title: "North Co. Tools", tag: "Product • Photo" },
-            { title: "Soundside Clinic", tag: "Recruiting Film • Video" },
-          ].map((item, i) => (
-            <article
-              key={i}
-              className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-md dark:border-slate-800 dark:from-slate-900 dark:to-slate-950"
-            >
-              <div className="h-40 w-full rounded-xl bg-gradient-to-br from-teal-400/30 via-cyan-400/20 to-indigo-400/30 transition group-hover:scale-105" />
-              <div className="mt-4 flex items-center justify-between">
-                <h3 className="font-semibold text-slate-900 dark:text-slate-200">{item.title}</h3>
-                <span className="text-xs text-slate-500">{item.tag}</span>
-              </div>
-            </article>
-          ))}
+          <WorkCard
+            title="Summit Outfitters"
+            tag="E‑commerce • Web"
+            kind="website"
+            siteUrl="https://example.com" 
+            description="Modern e‑commerce with fast filters, rich product pages, and a frictionless checkout."
+          />
+          <WorkCard
+            title="Cedar & Sea"
+            tag="Brand Film • Video"
+            kind="video"
+            videoEmbedUrl="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0&modestbranding=1"
+            description="A narrative brand film that blends coastal visuals with founder voiceover to drive brand affinity."
+          />
+          <WorkCard
+            title="Harbor Roasters"
+            tag="Lifestyle • Photo"
+            kind="photo"
+            photos={[
+              { src: "/media/hero/screen-poster.jpg", alt: "Lifestyle 1" },
+              { src: "/media/hero/pacnw-poster.jpg", alt: "Lifestyle 2" },
+              { src: "/media/hero/pacnw-poster.jpg", alt: "Lifestyle 3" },
+            ]}
+            description="Warm lifestyle photography for web and social, focused on ritual and craft."
+          />
+          <WorkCard
+            title="Cascade Trails"
+            tag="Marketing Site • Web"
+            kind="website"
+            siteUrl="https://example.org"
+            description="A conversion‑focused marketing site with testimonials, guides, and a resource library."
+          />
+          <WorkCard
+            title="North Co. Tools"
+            tag="Product • Photo"
+            kind="photo"
+            photos={[
+              { src: "/media/hero/pacnw-poster.jpg", alt: "Product 1" },
+              { src: "/media/hero/screen-poster.jpg", alt: "Product 2" },
+            ]}
+            description="Clean studio product photos with consistent angles and color‑accurate retouching."
+          />
+          <WorkCard
+            title="Soundside Clinic"
+            tag="Recruiting Film • Video"
+            kind="video"
+            videoSources={[
+              { src: "/media/hero/pacnw-hero.webm", type: "video/webm" },
+              { src: "/media/hero/pacnw-hero.mp4", type: "video/mp4" },
+            ]}
+            poster="/media/hero/pacnw-poster.jpg"
+            description="A recruiting spot highlighting team culture, impact, and growth—optimized for paid social."
+          />
         </div>
       </section>
 
