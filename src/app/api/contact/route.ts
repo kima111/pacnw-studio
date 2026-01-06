@@ -1,10 +1,13 @@
 import { NextResponse } from "next/server";
 
+export const runtime = "nodejs";
+
 type ContactPayload = {
   name: string;
   email: string;
   message: string;
-  company?: string; // honeypot
+  company?: string; // honeypot (legacy)
+  website?: string; // honeypot (preferred; less likely to be autofilled)
   formStartedAt?: number; // epoch ms, used to block instant bot submits
 };
 
@@ -70,7 +73,7 @@ async function sendViaResend(args: {
         replyTo: args.replyTo,
         text: args.text,
       });
-      return { ok: true as const };
+      return { ok: true as const, skipped: "missing_api_key" as const };
     }
     return { ok: false as const, error: "email_not_configured" };
   }
@@ -140,16 +143,26 @@ export async function POST(req: Request) {
   const name = (payload?.name || "").trim();
   const email = (payload?.email || "").trim();
   const message = (payload?.message || "").trim();
-  const company = (payload?.company || "").trim(); // honeypot
+  const company = (payload?.company || "").trim(); // honeypot (legacy key)
+  const website = (payload?.website || "").trim(); // honeypot (preferred key)
   const formStartedAt = typeof payload?.formStartedAt === "number" ? payload.formStartedAt : undefined;
 
-  // Honeypot: if it's filled, pretend success but do nothing.
-  if (company.length > 0) return NextResponse.json({ ok: true }, { status: 200 });
+  // Honeypot: if it's filled, it's probably a bot. However, password managers / autofill
+  // can sometimes fill hidden fields, which would silently drop real leads. So:
+  // - If honeypot is filled AND the submit was "instant", treat as bot and pretend success.
+  // - Otherwise, continue and send, but flag the message as suspicious in the email body.
+  const honeypotValue = website || company;
+  const honeypotTripped = honeypotValue.length > 0;
 
   // Basic timing check: humans don't submit instantly.
+  let elapsed: number | undefined;
   if (formStartedAt) {
-    const elapsed = Date.now() - formStartedAt;
-    if (elapsed < 2500) return NextResponse.json({ ok: false, error: "too_fast" }, { status: 429 });
+    elapsed = Date.now() - formStartedAt;
+    if (elapsed < 2500) {
+      // If the honeypot is tripped and the submission is instant, swallow it.
+      if (honeypotTripped) return NextResponse.json({ ok: true }, { status: 200 });
+      return NextResponse.json({ ok: false, error: "too_fast" }, { status: 429 });
+    }
   }
 
   if (name.length < 2 || name.length > 80) {
@@ -175,15 +188,25 @@ export async function POST(req: Request) {
   const safeName = escapeHtml(name);
   const safeEmail = escapeHtml(email);
   const safeMessage = escapeHtml(message).replaceAll("\n", "<br/>");
-  const subject = `New inquiry — ${name}`;
+  const subject = `${honeypotTripped ? "[Possible spam] " : ""}New inquiry — ${name}`;
 
-  const text = `New inquiry from ${name}\nReply-to: ${email}\nIP: ${ip}\n\n${message}`;
+  const text =
+    `New inquiry from ${name}\nReply-to: ${email}\nIP: ${ip}` +
+    (elapsed != null ? `\nElapsed: ${elapsed}ms` : "") +
+    (honeypotTripped ? `\nHoneypot filled: ${honeypotValue}` : "") +
+    `\n\n${message}`;
   const html = `
     <div style="font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;">
       <h2 style="margin:0 0 12px;">New inquiry</h2>
       <p style="margin:0 0 12px;"><strong>Name:</strong> ${safeName}<br/>
       <strong>Email:</strong> ${safeEmail}<br/>
-      <strong>IP:</strong> ${escapeHtml(ip)}</p>
+      <strong>IP:</strong> ${escapeHtml(ip)}${
+        elapsed != null ? `<br/><strong>Elapsed:</strong> ${escapeHtml(String(elapsed))}ms` : ""
+      }${
+        honeypotTripped
+          ? `<br/><strong style="color:#b45309;">Honeypot filled:</strong> ${escapeHtml(honeypotValue)}`
+          : ""
+      }</p>
       <div style="padding:12px 14px; border:1px solid #e5e7eb; border-radius:12px;">
         ${safeMessage}
       </div>
@@ -201,15 +224,86 @@ export async function POST(req: Request) {
 
   if (!sent.ok) return NextResponse.json({ ok: false, error: sent.error }, { status: 500 });
 
-  console.log("[contact] sent", {
+  console.log("[contact] owner email", {
     to,
     fromUsed: "fromUsed" in sent ? sent.fromUsed : from,
     id: "id" in sent ? sent.id : undefined,
+    skipped: "skipped" in sent ? sent.skipped : undefined,
   });
+
+  // Send a confirmation ("thank you") email to the submitter.
+  // Important: don't auto-reply to suspicious submissions; it can confirm addresses to spammers.
+  let confirmation:
+    | { ok: true; id?: string; fromUsed?: string; skipped?: "missing_api_key" }
+    | { ok: false; error: string }
+    | null = null;
+
+  if (!honeypotTripped) {
+    const confirmSubject = "Thanks for reaching out — PacNW Studio";
+    const confirmText =
+      `Hi ${name},\n\n` +
+      `Thanks for reaching out. We received your message and will reply as soon as possible.\n\n` +
+      `— PacNW Studio\n\n` +
+      `Your message:\n` +
+      `${message}\n`;
+
+    const confirmHtml = `
+      <div style="font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;">
+        <p style="margin:0 0 12px;">Hi ${safeName},</p>
+        <p style="margin:0 0 12px;">
+          Thanks for reaching out. We received your message and will reply as soon as possible.
+        </p>
+        <p style="margin:0 0 12px;">— PacNW Studio</p>
+        <div style="margin-top:16px; padding:12px 14px; border:1px solid #e5e7eb; border-radius:12px;">
+          ${safeMessage}
+        </div>
+      </div>
+    `.trim();
+
+    confirmation = await sendViaResend({
+      to: email,
+      from,
+      subject: confirmSubject,
+      replyTo: to,
+      text: confirmText,
+      html: confirmHtml,
+    });
+
+    if (!confirmation.ok) {
+      // Don't fail the entire request if only the confirmation email fails.
+      console.error("[contact] confirmation email failed:", confirmation.error);
+    } else {
+      console.log("[contact] confirmation email", {
+        to: email,
+        fromUsed: "fromUsed" in confirmation ? confirmation.fromUsed : from,
+        id: "id" in confirmation ? confirmation.id : undefined,
+        skipped: "skipped" in confirmation ? confirmation.skipped : undefined,
+      });
+    }
+  }
 
   if (process.env.NODE_ENV !== "production") {
     return NextResponse.json(
-      { ok: true, debug: { id: sent.id, fromUsed: sent.fromUsed } },
+      {
+        ok: true,
+        debug: {
+          owner: {
+            id: "id" in sent ? sent.id : undefined,
+            fromUsed: "fromUsed" in sent ? sent.fromUsed : undefined,
+            skipped: "skipped" in sent ? sent.skipped : undefined,
+          },
+          confirmation:
+            confirmation == null
+              ? { skipped: honeypotTripped ? "spam_suspected" : "not_sent" }
+              : confirmation.ok
+                ? {
+                    id: "id" in confirmation ? confirmation.id : undefined,
+                    fromUsed: "fromUsed" in confirmation ? confirmation.fromUsed : undefined,
+                    skipped: "skipped" in confirmation ? confirmation.skipped : undefined,
+                  }
+                : { error: confirmation.error },
+        },
+      },
       { status: 200 },
     );
   }
