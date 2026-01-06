@@ -35,7 +35,8 @@ export default function Logo({ variant = "mark", size = 44, className = "" }: Pr
         alt="PacNW Studio"
         width={size}
         height={size}
-        className={className + " rounded-md"}
+        // Tailwind preflight may set only `height:auto` on img; set both to avoid Next/Image warnings.
+        className={"h-auto w-auto " + className + " rounded-md"}
         onError={markError}
         priority
       />
@@ -48,7 +49,7 @@ export default function Logo({ variant = "mark", size = 44, className = "" }: Pr
       alt="PacNW Studio logo"
       width={800}
       height={600}
-      className={className}
+      className={"h-auto w-auto " + className}
       onError={markError}
       priority
     />

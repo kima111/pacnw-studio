@@ -1,20 +1,11 @@
-// (no imports)
+import HeroSitePreviewCarousel from "@/components/HeroSitePreviewCarousel";
+import { projects } from "@/data/projects";
 
 export default function HeroVideo() {
   return (
     <section className="relative isolate h-[80vh] min-h-[540px] w-full overflow-hidden">
-      {/* Video background */}
-      <video
-        className="absolute inset-0 h-full w-full object-cover"
-        autoPlay
-        muted
-        loop
-        playsInline
-        poster="/media/hero/pacnw-poster.jpg"
-      >
-        <source src="/media/hero/pacnw-hero.webm" type="video/webm" />
-        <source src="/media/hero/pacnw-hero.mp4" type="video/mp4" />
-      </video>
+      {/* Background: static cinematic gradient (slider moved into the screen) */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950" />
 
       {/* Edge fade */}
       <div
@@ -99,16 +90,16 @@ export default function HeroVideo() {
       />
 
       {/* Dark veil for contrast */}
-  <div className="absolute inset-0 bg-slate-900/45 dark:bg-black/70" />
+      <div className="absolute inset-0 bg-slate-950/45 dark:bg-background/70" />
 
-  {/* Foreground content */}
-  <div className="relative z-10 mx-auto flex h-full max-w-6xl flex-col items-start justify-center px-6 md:pr-[580px]">
-        <div className="inline-flex items-center gap-3 rounded-full bg-white/10 px-3 py-1 text-[11px] font-semibold text-white ring-1 ring-white/20 backdrop-blur md:text-xs">
+      {/* Foreground content */}
+      <div className="relative z-10 mx-auto flex h-full max-w-7xl flex-col items-start justify-center px-4 md:pr-[580px]">
+        <div className="inline-flex items-center gap-3 rounded-md border border-white/15 bg-white/10 px-2.5 py-0.5 text-[11px] font-semibold text-white backdrop-blur md:text-xs">
           <span>WEB</span><span>•</span><span>VIDEO</span><span>•</span><span>PHOTO</span>
         </div>
 
         <h1 className="mt-5 text-4xl font-semibold tracking-tight text-white sm:text-5xl md:text-6xl">
-          Pacific Northwest stories - cinematic visuals with stunning websites
+          Pacific Northwest stories and cinematic visuals with stunning websites
         </h1>
 
         <p className="mt-4 max-w-prose text-white/80">
@@ -118,13 +109,13 @@ export default function HeroVideo() {
         <div className="mt-8 flex flex-wrap gap-3">
           <a
             href="#contact"
-            className="rounded-full bg-teal-500 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-teal-400"
+            className="inline-flex h-10 items-center justify-center rounded-md bg-white px-3 text-sm font-semibold text-slate-950 shadow-sm transition hover:bg-white/90"
           >
             Start a project
           </a>
           <a
             href="#work"
-            className="rounded-full bg-white/10 px-5 py-3 text-sm font-semibold text-white ring-1 ring-white/30 hover:bg-white/15"
+            className="inline-flex h-10 items-center justify-center rounded-md border border-white/25 bg-white/10 px-3 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/15"
           >
             See our work
           </a>
@@ -132,26 +123,20 @@ export default function HeroVideo() {
 
         {/* Brand lockup removed by request */}
 
-  {/* 3D stage: tilted video screen (player) */}
-  <div className="mt-10 w-full md:absolute md:right-6 md:top-1/2 md:mt-0 md:w-[560px] md:-translate-y-1/2 md:z-0">
+        {/* 3D stage: tilted “highlight reel” screen */}
+        <div className="mt-10 w-full md:absolute md:right-6 md:top-1/2 md:mt-0 md:w-[560px] md:-translate-y-1/2 md:z-0">
           <div className="relative h-[320px] w-full [perspective:1400px]">
             {/* glow */}
-            <div aria-hidden className="absolute -inset-12 rounded-[32px] bg-teal-400/25 blur-3xl" />
+            <div aria-hidden className="absolute -inset-12 rounded-md bg-teal-400/25 blur-3xl" />
             {/* screen */}
-            <div className="relative h-full w-full rounded-2xl border border-white/20 bg-black/70 shadow-2xl ring-1 ring-white/10 [transform-style:preserve-3d] [transform:rotateY(-18deg)_rotateX(8deg)]">
+            <div className="relative h-full w-full rounded-md border border-white/20 bg-black/70 shadow-2xl ring-1 ring-white/10 [transform-style:preserve-3d] [transform:rotateY(-18deg)_rotateX(8deg)]">
               <div aria-hidden className="absolute -inset-px rounded-[inherit] bg-gradient-to-b from-white/40 to-white/5 opacity-20" />
-              <video
-                className="absolute inset-3 h-[calc(100%-24px)] w-[calc(100%-24px)] rounded-xl object-cover"
-                autoPlay
-                muted
-                loop
-                playsInline
-                controls
-                poster="/media/hero/screen-poster.jpg"
-              >
-                <source src="/media/hero/screen.webm" type="video/webm" />
-                <source src="/media/hero/screen.mp4" type="video/mp4" />
-              </video>
+              <div className="absolute inset-2.5 h-[calc(100%-20px)] w-[calc(100%-20px)] rounded-sm overflow-hidden">
+                {/* In-screen demo: site preview carousel (each slide is a live website preview) */}
+                <HeroSitePreviewCarousel items={projects} intervalMs={3600} fadeMs={650} />
+                {/* subtle contrast veil for readability */}
+                <div aria-hidden className="absolute inset-0 bg-black/15" />
+              </div>
             </div>
           </div>
         </div>
