@@ -48,7 +48,9 @@ export default function WorkCard(props: WorkCardProps) {
         >
           {/* front */}
           <div className="absolute inset-0 [backface-visibility:hidden]">
-            {kind === "website" && <WebsitePreview {...props} />}
+            {kind === "website" && props.siteUrl ? (
+              <WebsitePreview siteUrl={props.siteUrl} />
+            ) : null}
             {kind === "video" && <VideoPreview {...props} />}
             {kind === "photo" && <PhotoCarousel {...props} />}
           </div>
@@ -92,17 +94,18 @@ export default function WorkCard(props: WorkCardProps) {
   );
 }
 
-function WebsitePreview({ siteUrl }: WorkCardProps) {
-  if (!siteUrl) return null;
-  // Many sites disallow embedding; we display an overlay hint and an Open button.
+function WebsitePreview({ siteUrl }: { siteUrl: string }) {
   return (
     <div className="absolute inset-0">
       <iframe
         src={siteUrl}
         title="Website preview"
-        className="pointer-events-none absolute inset-0 h-full w-full rounded-md bg-background"
+        className="absolute inset-0 h-full w-full rounded-md bg-background"
         sandbox="allow-same-origin allow-scripts allow-forms allow-pointer-lock allow-popups"
         referrerPolicy="no-referrer"
+        // Keep click-to-flip behavior, but allow the browser to show native scrollbars.
+        onClick={(e) => e.stopPropagation()}
+        onWheel={(e) => e.stopPropagation()}
       />
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/35 to-transparent opacity-0 transition group-hover:opacity-100" />
     </div>
@@ -138,7 +141,7 @@ function VideoPreview({ videoEmbedUrl, videoSources, poster }: WorkCardProps) {
   );
 }
 
-function PhotoCarousel({ photos = [] }: WorkCardProps) {
+function PhotoCarousel({ photos = [] as PhotoItem[] }: WorkCardProps) {
   const valid = useMemo(() => photos.filter(Boolean), [photos]);
   const [idx, setIdx] = useState(0);
   const next = (e?: React.MouseEvent) => { e?.stopPropagation?.(); setIdx((i) => (i + 1) % Math.max(valid.length, 1)); };
