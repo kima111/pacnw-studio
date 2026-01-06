@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="PacNW Studio Mark">
+  <defs>
+    <linearGradient id="pacnwMarkGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#14b8a6"/>
+      <stop offset="1" stop-color="#06b6d4"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="12" fill="#0f172a"/>
+  <!-- Mountains -->
+  <path
+    d="M9 36c4-6 10-12 16-16l6 6 8-8c6 4 10 8 16 16"
+    fill="none"
+    stroke="#0e7490"
+    stroke-width="3"
+    stroke-linejoin="round"
+  />
+  <!-- Waves -->
+  <path
+    d="M11 44c12 0 12-8 24-8s12 8 24 8"
+    fill="none"
+    stroke="url(#pacnwMarkGradient)"
+    stroke-width="3"
+  />
+</svg>
+
+
