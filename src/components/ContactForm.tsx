@@ -3,8 +3,16 @@
 import { type FormEvent, useMemo, useState } from "react";
 
 type ApiResponse =
-  | { ok: true; debug?: { id?: string; fromUsed?: string } }
+  | {
+      ok: true;
+      debug?: {
+        owner?: { id?: string; fromUsed?: string; skipped?: string };
+        confirmation?: { id?: string; fromUsed?: string; skipped?: string; error?: string };
+      };
+    }
   | { ok: false; error: string };
+
+type DebugInfo = NonNullable<Extract<ApiResponse, { ok: true }>["debug"]>;
 
 export default function ContactForm() {
   const startedAt = useMemo(() => Date.now(), []);
@@ -13,12 +21,12 @@ export default function ContactForm() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
 
-  // honeypot: should remain empty
-  const [company, setCompany] = useState("");
+  // honeypot: should remain empty (use a name that's less likely to be autofilled)
+  const [website, setWebsite] = useState("");
 
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [errorText, setErrorText] = useState<string>("");
-  const [debugInfo, setDebugInfo] = useState<{ id?: string; fromUsed?: string } | null>(null);
+  const [debugInfo, setDebugInfo] = useState<DebugInfo | null>(null);
 
   function formatError(code: string) {
     switch (code) {
@@ -32,6 +40,8 @@ export default function ContactForm() {
         return "Email sending isn’t configured on the server yet.";
       case "missing_to_email":
         return "Server is missing CONTACT_TO_EMAIL.";
+      case "email_send_failed":
+        return "Email sending failed. Double-check your Resend API key and verified sender/domain.";
       default:
         return "Something went wrong. Please try again.";
     }
@@ -51,7 +61,7 @@ export default function ContactForm() {
           name,
           email,
           message,
-          company,
+          website,
           formStartedAt: startedAt,
         }),
       });
@@ -102,15 +112,44 @@ export default function ContactForm() {
       {status === "success" ? (
         <div className="mt-4 rounded-md border border-border bg-secondary p-3 text-sm">
           <div className="font-semibold">Message sent.</div>
-          <div className="mt-1 text-muted-foreground">We’ll reply as soon as possible.</div>
-          {process.env.NODE_ENV !== "production" && debugInfo?.id ? (
+          <div className="mt-1 text-muted-foreground">
+            We’ll reply as soon as possible. You should also receive a confirmation email.
+          </div>
+
+          {process.env.NODE_ENV !== "production" ? (
             <div className="mt-2 text-xs text-muted-foreground">
-              Dev debug: id <code className="rounded bg-muted px-1 py-0.5">{debugInfo.id}</code>
-              {debugInfo.fromUsed ? (
-                <>
-                  {" "}
-                  • from <code className="rounded bg-muted px-1 py-0.5">{debugInfo.fromUsed}</code>
-                </>
+              {debugInfo?.owner?.skipped === "missing_api_key" ? (
+                <div className="text-destructive">
+                  Dev note: emails were not sent because <code>RESEND_API_KEY</code> is missing (messages are
+                  only logged in the server console).
+                </div>
+              ) : null}
+              {debugInfo?.owner?.id ? (
+                <div className="mt-1">
+                  Owner email id{" "}
+                  <code className="rounded bg-muted px-1 py-0.5">{debugInfo.owner.id}</code>
+                  {debugInfo.owner.fromUsed ? (
+                    <>
+                      {" "}
+                      • from{" "}
+                      <code className="rounded bg-muted px-1 py-0.5">{debugInfo.owner.fromUsed}</code>
+                    </>
+                  ) : null}
+                </div>
+              ) : null}
+              {debugInfo?.confirmation?.id ? (
+                <div className="mt-1">
+                  Confirmation email id{" "}
+                  <code className="rounded bg-muted px-1 py-0.5">{debugInfo.confirmation.id}</code>
+                </div>
+              ) : null}
+              {debugInfo?.confirmation?.error ? (
+                <div className="mt-1 text-destructive">
+                  Confirmation email failed: <code>{debugInfo.confirmation.error}</code>
+                </div>
+              ) : null}
+              {debugInfo?.confirmation?.skipped ? (
+                <div className="mt-1">Confirmation: {debugInfo.confirmation.skipped}</div>
               ) : null}
             </div>
           ) : null}
@@ -123,12 +162,14 @@ export default function ContactForm() {
             aria-hidden="true"
           >
             <label>
-              Company
+              Website
               <input
                 tabIndex={-1}
                 autoComplete="off"
-                value={company}
-                onChange={(e) => setCompany(e.target.value)}
+                inputMode="none"
+                name="website"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
               />
             </label>
           </div>

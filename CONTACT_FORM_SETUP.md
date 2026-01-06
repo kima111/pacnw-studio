@@ -11,8 +11,17 @@ Set these environment variables on your host (ex: Vercel Project → Settings �
 - **`RESEND_API_KEY`**: your Resend API key
 
 Notes:
-- In **development**, if `RESEND_API_KEY` is missing, the API route will **log the message to the server console** so you can test the form end-to-end.
+- In **development**, if `RESEND_API_KEY` is missing, the API route will **log the email payload to the server console** (and the UI will show a dev note that delivery was skipped).
 - In **production**, missing `RESEND_API_KEY` will cause the route to return an error (so you don’t silently lose leads).
+- The server sends **two emails** on successful submit:
+  - a notification to **`CONTACT_TO_EMAIL`**
+  - a “thanks for reaching out” confirmation to the submitter’s email (skipped for suspicious spam submissions)
+
+### Important note (autofill + “honeypot”)
+
+The form uses a hidden “honeypot” field for lightweight spam protection. Some password managers / browser autofill can mistakenly fill hidden fields.
+
+This repo is set up to **still send the email** even if the honeypot is filled (and it will flag the email as “Possible spam”), so you don’t lose real leads.
 
 ### Spam protection
 
