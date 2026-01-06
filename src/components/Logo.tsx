@@ -11,7 +11,11 @@ type Props = {
 
 export default function Logo({ variant = "mark", size = 44, className = "" }: Props) {
   // Try multiple filenames in order: SVG (best), then PNG.
-  const sources = ["/pacnw-logo.svg", "/pacnw-logo.png"];
+  // Use a dedicated square mark for `variant="mark"` to avoid squishing a wide wordmark.
+  const sources =
+    variant === "mark"
+      ? ["/pacnw-mark.svg", "/pacnw-logo.svg", "/pacnw-logo.png"]
+      : ["/pacnw-logo.svg", "/pacnw-logo.png"];
   const [idx, setIdx] = useState(0);
   const src = sources[idx];
 
@@ -35,8 +39,9 @@ export default function Logo({ variant = "mark", size = 44, className = "" }: Pr
         alt="PacNW Studio"
         width={size}
         height={size}
-        // Tailwind preflight may set only `height:auto` on img; set both to avoid Next/Image warnings.
-        className={"h-auto w-auto " + className + " rounded-md"}
+        // Let Next/Image's width/height control rendered size. Avoid `w-auto/h-auto` which can
+        // fall back to the SVG's intrinsic dimensions (e.g. 800x400) and blow up layouts.
+        className={"rounded-md " + className}
         onError={markError}
         priority
       />
@@ -49,7 +54,7 @@ export default function Logo({ variant = "mark", size = 44, className = "" }: Pr
       alt="PacNW Studio logo"
       width={800}
       height={600}
-      className={"h-auto w-auto " + className}
+      className={className}
       onError={markError}
       priority
     />
