@@ -123,7 +123,7 @@ function Gear({ spec, x, speed, index, isDark }: { spec: GearSpec; x: number; sp
             return w < 380 ? base * 0.8 : w < 640 ? base * 0.9 : base;
           })()}
         >
-          <div className="rounded-md dark:bg-slate-500/75 px-3 py-1.5 text-center text-slate-900 dark:text-white ring-1 ring-white/15 backdrop-blur border border-teal-500/60">
+          <div className="rounded-sm dark:bg-slate-500/75 px-2.5 py-1 text-center text-slate-900 dark:text-white ring-1 ring-white/15 backdrop-blur border border-teal-500/60">
             <div className="text-xl font-semibold md:text-lg">{spec.label}</div>
             <div className="mt-0.5 max-w-[580px] text-[12px] text-slate-900/90 dark:text-white/90 md:text-md">{spec.blurb}</div>
         </div>
@@ -284,7 +284,7 @@ export default function GearTimeline({
   }
 
   return (
-  <div className="relative w-full overflow-hidden rounded-2xl border border-slate-200 bg-gradient-to-b from-white to-slate-50 shadow-sm ring-1 ring-white/40 dark:border-slate-800 dark:from-slate-900 dark:to-slate-950 dark:ring-white/10 h-[420px] sm:h-[500px] md:h-[630px]">
+  <div className="relative h-[420px] w-full overflow-hidden rounded-md border border-slate-200 bg-gradient-to-b from-white to-slate-50 shadow-sm ring-1 ring-white/40 dark:border-slate-800 dark:from-slate-900 dark:to-slate-950 dark:ring-white/10 sm:h-[500px] md:h-[630px]">
       {/* subtle grid background (separate for light/dark) */}
       <div
         aria-hidden

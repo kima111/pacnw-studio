@@ -32,7 +32,7 @@ export default function WorkCard(props: WorkCardProps) {
 
   return (
     <article
-      className="group relative cursor-pointer overflow-hidden rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-5 shadow-sm outline-none transition hover:-translate-y-1 hover:shadow-md focus-visible:ring-2 focus-visible:ring-teal-500 dark:border-slate-800 dark:from-slate-900 dark:to-slate-950"
+      className="group relative cursor-pointer overflow-hidden rounded-md border border-border bg-card p-4 shadow-sm outline-none transition hover:-translate-y-1 hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background md:p-5"
       role="button"
       tabIndex={0}
       aria-pressed={flipped}
@@ -40,8 +40,12 @@ export default function WorkCard(props: WorkCardProps) {
       onKeyDown={onKey}
    >
       {/* Preview area with flip */}
-      <div className="relative h-56 w-full overflow-hidden rounded-xl bg-gradient-to-br from-teal-400/30 via-cyan-400/20 to-indigo-400/30 [perspective:1200px]">
-        <div className={`absolute inset-0 rounded-xl [transform-style:preserve-3d] transition-transform duration-700 ${flipped ? "[transform:rotateY(180deg)]" : ""}`}>
+      <div className="relative h-[360px] w-full overflow-hidden rounded-md bg-muted [perspective:1200px] md:h-[440px] lg:h-[520px] xl:h-[560px]">
+        <div
+          className={`absolute inset-0 rounded-md [transform-style:preserve-3d] transition-transform duration-700 ${
+            flipped ? "[transform:rotateY(180deg)]" : ""
+          }`}
+        >
           {/* front */}
           <div className="absolute inset-0 [backface-visibility:hidden]">
             {kind === "website" && <WebsitePreview {...props} />}
@@ -49,13 +53,15 @@ export default function WorkCard(props: WorkCardProps) {
             {kind === "photo" && <PhotoCarousel {...props} />}
           </div>
           {/* back */}
-          <div className="absolute inset-0 flex items-center justify-center rounded-xl [backface-visibility:hidden] [transform:rotateY(180deg)]">
-            <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-slate-900/90 to-slate-800/80 backdrop-blur" />
-            <div className="relative z-10 flex max-w-[90%] flex-col items-center gap-2 text-center">
-              <div className="text-sm font-semibold text-white">{title}</div>
-              <div className="text-[11px] uppercase tracking-wide text-white/70">{tag}</div>
+          <div className="absolute inset-0 flex items-center justify-center rounded-md [backface-visibility:hidden] [transform:rotateY(180deg)]">
+            <div className="absolute inset-0 rounded-md bg-background/85 backdrop-blur-md" />
+            <div className="relative z-10 flex w-full max-w-[92%] flex-col items-center gap-2 text-center">
+              <div className="text-lg font-semibold text-foreground md:text-xl">{title}</div>
+              <div className="inline-flex items-center rounded-md border border-border bg-background/60 px-2.5 py-1 text-xs font-medium text-muted-foreground">
+                {tag}
+              </div>
               {props.description && (
-                <p className="mt-1 text-xs leading-relaxed text-white/80">
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground md:text-base">
                   {props.description}
                 </p>
               )}
@@ -65,7 +71,7 @@ export default function WorkCard(props: WorkCardProps) {
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
-                  className="mt-2 rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white ring-1 ring-white/20 hover:bg-white/15"
+                  className="mt-3 inline-flex h-9 items-center justify-center rounded-md bg-primary px-3 text-sm font-semibold text-primary-foreground shadow-sm transition hover:bg-primary/90"
                 >
                   Open site ↗
                 </a>
@@ -76,9 +82,11 @@ export default function WorkCard(props: WorkCardProps) {
       </div>
 
       {/* Meta */}
-      <div className="mt-4 flex items-center justify-between">
-        <h3 className="font-semibold text-slate-900 dark:text-slate-200">{title}</h3>
-        <span className="text-xs text-slate-500">{tag}</span>
+      <div className="mt-5 flex items-start justify-between gap-4">
+        <h3 className="text-2xl font-semibold leading-tight text-card-foreground md:text-3xl">{title}</h3>
+        <span className="shrink-0 rounded-md border border-border bg-background px-2.5 py-1 text-sm font-medium text-muted-foreground">
+          {tag}
+        </span>
       </div>
     </article>
   );
@@ -92,11 +100,11 @@ function WebsitePreview({ siteUrl }: WorkCardProps) {
       <iframe
         src={siteUrl}
         title="Website preview"
-        className="pointer-events-none absolute inset-0 h-full w-full rounded-xl bg-white dark:bg-slate-900"
+        className="pointer-events-none absolute inset-0 h-full w-full rounded-md bg-background"
         sandbox="allow-same-origin allow-scripts allow-forms allow-pointer-lock allow-popups"
         referrerPolicy="no-referrer"
       />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 transition group-hover:opacity-100" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/35 to-transparent opacity-0 transition group-hover:opacity-100" />
     </div>
   );
 }
@@ -108,7 +116,7 @@ function VideoPreview({ videoEmbedUrl, videoSources, poster }: WorkCardProps) {
         <iframe
           src={videoEmbedUrl}
           title="Video preview"
-          className="absolute inset-0 h-full w-full rounded-xl"
+          className="absolute inset-0 h-full w-full rounded-md"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowFullScreen
         />
@@ -118,7 +126,7 @@ function VideoPreview({ videoEmbedUrl, videoSources, poster }: WorkCardProps) {
   const sources = videoSources ?? [];
   return (
     <video
-      className="absolute inset-0 h-full w-full rounded-xl object-cover"
+      className="absolute inset-0 h-full w-full rounded-md object-cover"
       controls
       playsInline
       poster={poster}
@@ -145,7 +153,7 @@ function PhotoCarousel({ photos = [] }: WorkCardProps) {
         src={valid[idx]?.src}
         alt={valid[idx]?.alt ?? "Gallery image"}
         fill
-        className="rounded-xl object-cover"
+        className="rounded-md object-cover"
         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
         priority={idx === 0}
       />
@@ -157,7 +165,7 @@ function PhotoCarousel({ photos = [] }: WorkCardProps) {
             type="button"
             aria-label="Previous image"
             onClick={prev}
-            className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-black/60 p-1 text-white ring-1 ring-white/20 backdrop-blur hover:bg-black/70"
+            className="absolute left-2 top-1/2 -translate-y-1/2 rounded-md border border-border bg-background/70 p-1 text-foreground shadow-sm backdrop-blur transition hover:bg-background"
           >
             ‹
           </button>
@@ -165,7 +173,7 @@ function PhotoCarousel({ photos = [] }: WorkCardProps) {
             type="button"
             aria-label="Next image"
             onClick={next}
-            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-black/60 p-1 text-white ring-1 ring-white/20 backdrop-blur hover:bg-black/70"
+            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md border border-border bg-background/70 p-1 text-foreground shadow-sm backdrop-blur transition hover:bg-background"
           >
             ›
           </button>
@@ -174,12 +182,12 @@ function PhotoCarousel({ photos = [] }: WorkCardProps) {
 
       {/* dots */}
       {valid.length > 1 && (
-        <div className="absolute bottom-2 left-1/2 flex -translate-x-1/2 gap-1">
+        <div className="absolute bottom-2 left-1/2 flex -translate-x-1/2 gap-1.5 rounded-md border border-border bg-background/60 px-2 py-1 backdrop-blur">
           {valid.map((_, i) => (
             <button
               key={i}
               aria-label={`Go to image ${i + 1}`}
-              className={"h-1.5 w-1.5 rounded-full " + (i === idx ? "bg-white" : "bg-white/50")}
+              className={"h-1.5 w-1.5 rounded-full " + (i === idx ? "bg-foreground" : "bg-foreground/35")}
               onClick={(e) => { e.stopPropagation(); setIdx(i); }}
             />
           ))}

@@ -31,7 +31,7 @@ export default function ThemeToggle() {
     <button
       onClick={toggle}
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-      className="rounded-full border border-slate-300/70 bg-white/70 p-2 text-slate-700 shadow-sm backdrop-blur transition hover:bg-slate-50 dark:border-slate-700/70 dark:bg-slate-900/70 dark:text-slate-200 dark:hover:bg-slate-800"
+      className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-input bg-background/70 text-foreground shadow-sm backdrop-blur transition hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       title={isDark ? "Light mode" : "Dark mode"}
     >
       {/* avoid hydration mismatch by hiding icon until mounted */}
