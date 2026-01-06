@@ -146,7 +146,7 @@ export default function HeroSitePreviewCarousel({
             src={p.siteUrl}
             title={`${p.title} preview`}
             className={
-              "pointer-events-none absolute inset-0 h-full w-full rounded-none bg-black transition-opacity " +
+              "absolute inset-0 h-full w-full pointer-events-none rounded-none bg-black transition-opacity " +
               (isFront ? "opacity-100" : "opacity-0")
             }
             style={!reducedMotion ? { transitionDuration: `${fadeMs}ms` } : undefined}
