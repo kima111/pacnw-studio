@@ -13,8 +13,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Pacific Northwest Studios",
-  description: "Pacific Northwest Studios — cinematic visuals and stunning websites.",
+  title: "Pacific Northwest Studio",
+  description: "Pacific Northwest Studio — cinematic visuals and stunning websites.",
+  icons: {
+    icon: "/pacnw-mark.svg",
+    shortcut: "/pacnw-mark.svg",
+  },
 };
 
 export default function RootLayout({
